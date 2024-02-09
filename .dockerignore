@@ -3,3 +3,7 @@ npm-debug.log
 /dist
 # Cache used by TypeScript's incremental build
 *.tsbuildinfo
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+.git
+.gitignore
