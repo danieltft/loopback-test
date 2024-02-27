@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  loopback-mysql:
+    container_name: "loopback-mysql"
+    image: "mysql:8"
+    platform: 'linux/amd64'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin --sql_mode=IGNORE_SPACE
+    ports:
+      - "3306:3306"
+    volumes:
+      - ~/Codes/dbs/mysql-test:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
