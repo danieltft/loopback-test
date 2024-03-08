@@ -1,8 +1,11 @@
+import {intercept} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {get, getModelSchemaRef, post, requestBody} from '@loopback/rest';
+import {TransactionInterceptor} from '../interceptors/transaction.interceptor';
 import {Company} from '../models/company.model';
 import {CompanyRepository} from '../repositories/company.repository';
 
+@intercept(TransactionInterceptor)
 export class CompanyController {
   constructor(
     @repository(CompanyRepository) public repository: CompanyRepository
@@ -38,6 +41,7 @@ export class CompanyController {
     return this.repository.create(newCompany);
   }
 
+  @intercept('auth')
   @get('/company', {
     responses: {
       '200': {

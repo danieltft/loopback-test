@@ -17,9 +17,10 @@ export class User extends Entity {
   email: string;
 
   @property({
-    type: 'string'
+    type: 'string',
+    name: 'cognito_id'
   })
-  password: string;
+  cognitoId: string;
 
   @property({
     type: 'number',

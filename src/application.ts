@@ -8,6 +8,7 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {AuthInterceptor} from './interceptors/auth.interceptor';
 import {MySequence} from './sequence';
 
 export {ApplicationConfig};
@@ -29,6 +30,8 @@ export class LoopbackTestApplication extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+
+    this.bind('auth').toProvider(AuthInterceptor);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

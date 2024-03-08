@@ -50,12 +50,14 @@
     "!*/__tests__"
   ],
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.525.0",
     "@loopback/boot": "^6.1.5",
     "@loopback/core": "^5.1.5",
     "@loopback/repository": "^6.1.5",
     "@loopback/rest": "^13.1.5",
     "@loopback/rest-explorer": "^6.1.5",
     "@loopback/service-proxy": "^6.1.5",
+    "aws-jwt-verify": "^4.0.1",
     "loopback-connector-mysql": "^5.4.4",
     "tslib": "^2.0.0"
   },
