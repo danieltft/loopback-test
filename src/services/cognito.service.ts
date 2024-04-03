@@ -14,10 +14,15 @@ export class CognitoService {
   USER_POOL_ID: string;
 
   constructor() {
-    this.client = new CognitoIdentityProviderClient()
-    if (!process.env.AWS_COGNITO_USER_POOL || !process.env.AWS_COGNITO_CLIENT_ID) {
+    if (!process.env.AWS_COGNITO_USER_POOL ||
+      !process.env.AWS_COGNITO_CLIENT_ID ||
+      !process.env.AWS_DEFAULT_REGION
+    ) {
       throw new Error(`env variables not found`);
     }
+    this.client = new CognitoIdentityProviderClient({
+      region: process.env.AWS_DEFAULT_REGION
+    });
     this.CLIENT_ID = process.env.AWS_COGNITO_CLIENT_ID;
     this.USER_POOL_ID = process.env.AWS_COGNITO_USER_POOL;
   }
