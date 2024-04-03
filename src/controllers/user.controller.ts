@@ -43,6 +43,7 @@ export class UserController {
   })
   async signUp(
     @requestBody({
+      required: true,
       content: {
         'application/json': {
           schema: getModelSchemaRef(CreateUser)
@@ -51,7 +52,6 @@ export class UserController {
     })
     request: CreateUser
   ): Promise<User> {
-    console.log('creating user');
     const company = await this.companyRepository.create({name: request.company});
 
     const user = await this.repository.create({
@@ -60,7 +60,6 @@ export class UserController {
       lastName: request.lastName,
       companyId: company.id
     });
-    console.log('user created in database');
     const authService = new CognitoService();
     try {
       await authService.signUp(
@@ -95,6 +94,7 @@ export class UserController {
   })
   async login(
     @requestBody({
+      required: true,
       content: {
         'application/json': {
           schema: getModelSchemaRef(Credentials)

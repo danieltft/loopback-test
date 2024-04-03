@@ -12,16 +12,13 @@ export const TransactionInterceptor: Interceptor = async (invocationCtx, next) =
   const transaction = await dataSource.beginTransaction(
     IsolationLevel.READ_COMMITTED
   );
-  console.log('transaction begin');
   try {
     // Go with the normal logic
     const result = await next();
 
     // Commit the database changes
-    console.log('trying to commit');
     await transaction.commit();
 
-    console.log('comiited transaction');
     return result;
   } catch (err: any) {
     console.log(err);
