@@ -1,5 +1,5 @@
 import {intercept} from '@loopback/core';
-import {repository} from '@loopback/repository';
+import {model, property, repository} from '@loopback/repository';
 import {get, getModelSchemaRef, post, requestBody} from '@loopback/rest';
 import HttpError, {STATUS_CONFLICT} from '../common/http';
 import {TransactionInterceptor} from '../interceptors/transaction.interceptor';
@@ -8,15 +8,50 @@ import {CompanyRepository} from '../repositories/company.repository';
 import {UserRepository} from '../repositories/user.repository';
 import {CognitoService} from '../services/cognito.service';
 
+@model({
+  name: "credentials"
+})
 class Credentials {
+  @property({
+    required: true,
+    type: 'string'
+  })
   email: string;
+  @property({
+    required: true,
+    type: 'string'
+  })
   password: string;
 }
 
-class CreateUser extends Credentials {
+@model({
+  name: "createUser"
+})
+class CreateUser {
+  @property({
+    required: true,
+    type: 'string'
+  })
   firstName: string;
+  @property({
+    type: 'string'
+  })
   lastName: string;
+  @property({
+    required: true,
+    type: 'string'
+  })
   company: string;
+  @property({
+    required: true,
+    type: 'string'
+  })
+  email: string;
+  @property({
+    required: true,
+    type: 'string'
+  })
+  password: string;
 }
 
 @intercept(TransactionInterceptor)
