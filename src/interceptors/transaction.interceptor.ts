@@ -8,10 +8,12 @@ export const TransactionInterceptor: Interceptor = async (invocationCtx, next) =
 
   // Obtain the datasource to begin the transaction
   const dataSource = controller.repository.dataSource as juggler.DataSource;
+  console.log('datasource found', dataSource);
 
   const transaction = await dataSource.beginTransaction(
     IsolationLevel.READ_COMMITTED
   );
+  console.log('transaction begin', transaction);
   try {
     // Go with the normal logic
     const result = await next();
@@ -19,8 +21,8 @@ export const TransactionInterceptor: Interceptor = async (invocationCtx, next) =
     // Commit the database changes
     await transaction.commit();
 
+    console.log('comiited transaction');
     return result;
-
   } catch (err: any) {
     // Rollback the changes if any error happens
     await transaction.rollback();
