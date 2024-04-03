@@ -51,6 +51,7 @@ export class UserController {
     })
     request: CreateUser
   ): Promise<User> {
+    console.log('creating user');
     const company = await this.companyRepository.create({name: request.company});
 
     const user = await this.repository.create({
