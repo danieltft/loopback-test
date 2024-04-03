@@ -23,6 +23,19 @@ export class User extends Entity {
   cognitoId: string;
 
   @property({
+    type: 'string',
+    name: 'first_name',
+    required: true
+  })
+  firstName: string;
+
+  @property({
+    type: 'string',
+    name: 'last_name'
+  })
+  lastName: string;
+
+  @property({
     type: 'number',
     name: 'company_id'
   })

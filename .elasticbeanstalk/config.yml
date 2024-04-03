@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: develop
+    environment: test-develop
 global:
   application_name: back
   branch: null

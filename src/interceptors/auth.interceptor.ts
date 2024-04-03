@@ -17,9 +17,7 @@ export class AuthInterceptor implements Provider<Interceptor> {
     next: () => ValueOrPromise<InvocationResult>,
   ): Promise<InvocationResult> {
     // Get the current controller target
-    console.log('context for auth interceptor');
     const context: any = await invocationCtx.get('rest.http.request.context');
-    console.log(context);
     const authHeader: string = context.request.headers.authorization;
     const token = authHeader.split(" ")[1];
     const service = new CognitoVerify();

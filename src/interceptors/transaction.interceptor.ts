@@ -9,7 +9,6 @@ export const TransactionInterceptor: Interceptor = async (invocationCtx, next) =
   // Obtain the datasource to begin the transaction
   const dataSource = controller.repository.dataSource as juggler.DataSource;
 
-  console.log('interceptor transaction');
   const transaction = await dataSource.beginTransaction(
     IsolationLevel.READ_COMMITTED
   );

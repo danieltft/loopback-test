@@ -1,9 +1,10 @@
 import {intercept} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {getModelSchemaRef, post, requestBody} from '@loopback/rest';
+import {get, getModelSchemaRef, post, requestBody} from '@loopback/rest';
 import HttpError, {STATUS_CONFLICT} from '../common/http';
 import {TransactionInterceptor} from '../interceptors/transaction.interceptor';
 import {User} from '../models/user.model';
+import {CompanyRepository} from '../repositories/company.repository';
 import {UserRepository} from '../repositories/user.repository';
 import {CognitoService} from '../services/cognito.service';
 
@@ -12,11 +13,18 @@ class Credentials {
   password: string;
 }
 
+class CreateUser extends Credentials {
+  firstName: string;
+  lastName: string;
+  company: string;
+}
+
 @intercept(TransactionInterceptor)
 export class UserController {
 
   constructor(
-    @repository(UserRepository) public repository: UserRepository
+    @repository(UserRepository) public repository: UserRepository,
+    @repository(CompanyRepository) public companyRepository: CompanyRepository
   ) { }
 
   @post('/signup', {
@@ -37,21 +45,25 @@ export class UserController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Credentials)
+          schema: getModelSchemaRef(CreateUser)
         },
       },
     })
-    credentials: Credentials
+    request: CreateUser
   ): Promise<User> {
+    const company = await this.companyRepository.create({name: request.company});
+
     const user = await this.repository.create({
-      email: credentials.email,
-      companyId: 1
+      email: request.email,
+      firstName: request.firstName,
+      lastName: request.lastName,
+      companyId: company.id
     });
     const authService = new CognitoService();
     try {
       await authService.signUp(
         user,
-        credentials.password,
+        request.password,
         this.repository
       );
     } catch (err: any) {
@@ -92,6 +104,27 @@ export class UserController {
       credentials.email,
       credentials.password
     );
+    return result;
+  }
+
+  @intercept('auth')
+  @get('/users', {
+    responses: {
+      '200': {
+        description: 'Array of Companies',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(User)
+            },
+          },
+        },
+      },
+    },
+  })
+  async get(): Promise<User[]> {
+    const result = await this.repository.find();
     return result;
   }
 }
