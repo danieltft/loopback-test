@@ -3,8 +3,8 @@ import {CognitoJwtVerifier} from "aws-jwt-verify";
 export class CognitoVerify {
 
   private verifier: any;
-  CLIENT_ID: string = "37aomg857dls43n014lskdsn9b";
-  USER_POOL_ID: string = "us-east-2_ru6oexoUU";
+  CLIENT_ID: string;
+  USER_POOL_ID: string;
 
   constructor() {
     if (!process.env.AWS_COGNITO_USER_POOL || !process.env.AWS_COGNITO_CLIENT_ID) {

@@ -11,7 +11,7 @@ export class CognitoService {
   private client: CognitoIdentityProviderClient;
 
   CLIENT_ID: string;
-  USER_POOL_ID: string = "us-east-2_ru6oexoUU";
+  USER_POOL_ID: string;
 
   constructor() {
     this.client = new CognitoIdentityProviderClient()

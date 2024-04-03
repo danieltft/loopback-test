@@ -60,6 +60,7 @@ export class UserController {
       lastName: request.lastName,
       companyId: company.id
     });
+    console.log('user created in database');
     const authService = new CognitoService();
     try {
       await authService.signUp(
@@ -68,6 +69,8 @@ export class UserController {
         this.repository
       );
     } catch (err: any) {
+      console.log('error calling auth service');
+      console.log(err);
       throw new HttpError(
         err.message,
         STATUS_CONFLICT
