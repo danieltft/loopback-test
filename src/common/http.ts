@@ -7,13 +7,12 @@ export const STATUS_NOT_FOUND = 404;
 export const STATUS_CONFLICT = 409;
 export const STATUS_INTERNAL_SERVER_ERROR = 500;
 
-export default class HttpError extends Error {
+export default class HttpError {
   message: string;
   statusCode: number;
   silent: boolean;
 
   constructor(message: string, statusCode: number) {
-    super(message);
     if (
       typeof statusCode !== "number" ||
       statusCode < 100 ||

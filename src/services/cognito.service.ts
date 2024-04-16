@@ -1,4 +1,5 @@
 import {AdminCreateUserCommand, AdminSetUserPasswordCommand, AuthFlowType, AuthenticationResultType, CognitoIdentityProviderClient, InitiateAuthCommand, ListUserPoolsCommand, MessageActionType} from "@aws-sdk/client-cognito-identity-provider";
+import HttpError, {STATUS_BAD_REQUEST, STATUS_UNAUTHORIZED} from '../common/http';
 import {User} from '../models/user.model';
 import {UserRepository} from '../repositories/user.repository';
 
@@ -60,7 +61,12 @@ export class CognitoService {
       const secondResult = await this.client.send(passwordCommand);
       console.log(secondResult);
     } catch (err: any) {
-      console.log(err);
+      if (err.$metadata && err.$metadata.httpStatusCode < 500) {
+        throw new HttpError(
+          err.message,
+          STATUS_BAD_REQUEST
+        );
+      }
       throw err;
     }
   }
@@ -82,7 +88,12 @@ export class CognitoService {
       }
       return result.AuthenticationResult;
     } catch (err: any) {
-      console.log(err);
+      if (err.$metadata && err.$metadata.httpStatusCode < 500) {
+        throw new HttpError(
+          err.message,
+          STATUS_UNAUTHORIZED
+        );
+      }
       throw err;
     }
   }

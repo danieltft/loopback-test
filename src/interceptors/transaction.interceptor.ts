@@ -16,14 +16,22 @@ export const TransactionInterceptor: Interceptor = async (invocationCtx, next) =
     // Go with the normal logic
     const result = await next();
 
-    // Commit the database changes
+    // Commit the database changes s
     await transaction.commit();
 
     return result;
   } catch (err: any) {
-    console.log(err);
+    //console.log(err);
     // Rollback the changes if any error happens
     await transaction.rollback();
+
+    if (err.statusCode && err.statusCode < 500) {
+      throw new HttpError(
+        err.message,
+        err.statusCode
+      );
+    }
+
     throw new HttpError(
       err.message,
       STATUS_INTERNAL_SERVER_ERROR

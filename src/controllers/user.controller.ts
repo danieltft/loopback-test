@@ -87,6 +87,15 @@ export class UserController {
     })
     request: CreateUser
   ): Promise<User> {
+    const existentCompany = await this.companyRepository.count({name: request.company});
+
+    if (existentCompany.count > 0) {
+      throw new HttpError(
+        `company already exists`,
+        STATUS_CONFLICT
+      )
+    }
+
     const company = await this.companyRepository.create({name: request.company});
 
     const user = await this.repository.create({
@@ -163,7 +172,14 @@ export class UserController {
     },
   })
   async get(): Promise<User[]> {
-    const result = await this.repository.find();
+    const result = await this.repository.find({
+      include: [{
+        relation: 'roles',
+        scope: {
+          include: ['permissions']
+        }
+      }]
+    });
     return result;
   }
 }
