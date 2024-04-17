@@ -19,7 +19,8 @@ export class Role extends Entity {
 
   @property({
     type: 'number',
-    name: 'company_id'
+    name: 'company_id',
+    hidden: true
   })
   companyId: number;
 

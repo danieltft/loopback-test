@@ -1,9 +1,9 @@
-import {ApplicationConfig, LoopbackTestApplication} from './application';
+import {ApplicationConfig, IcebergerApplication} from './application';
 
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new LoopbackTestApplication(options);
+  const app = new IcebergerApplication(options);
   await app.boot();
   await app.start();
 

@@ -1,3 +1,4 @@
+import {AuthorizationBindings, AuthorizationComponent, AuthorizationDecision, AuthorizationTags} from '@loopback/authorization';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
@@ -8,12 +9,12 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
-import {AuthInterceptor} from './interceptors/auth.interceptor';
+import {AuthorizationProvider} from './providers/authorizer';
 import {MySequence} from './sequence';
 
 export {ApplicationConfig};
 
-export class LoopbackTestApplication extends BootMixin(
+export class IcebergerApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
@@ -31,7 +32,14 @@ export class LoopbackTestApplication extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
-    this.bind('auth').toProvider(AuthInterceptor);
+    this.configure(AuthorizationBindings.COMPONENT).to({
+      precedence: AuthorizationDecision.DENY,
+      defaultDecision: AuthorizationDecision.DENY,
+    });
+    this.component(AuthorizationComponent);
+    this.bind('authorizationProviders.provider')
+      .toProvider(AuthorizationProvider)
+      .tag(AuthorizationTags.AUTHORIZER);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

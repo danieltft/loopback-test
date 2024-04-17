@@ -1,3 +1,13 @@
+START TRANSACTION;
+
+DROP TABLE IF EXISTS `user_role`;
+DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `role_permission`;
+DROP TABLE IF EXISTS `role`;
+DROP TABLE IF EXISTS `permission`;
+DROP TABLE IF EXISTS `user_role`;
+DROP TABLE IF EXISTS `company`;
+
 CREATE TABLE `company` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(200) NOT NULL,
@@ -51,3 +61,17 @@ CREATE TABLE `role_permission` (
   FOREIGN KEY(`permission_id`) REFERENCES permission(`id`),
   FOREIGN KEY(`role_id`) REFERENCES role(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_bin;
+
+INSERT INTO `company`(name) VALUES ('Template');
+
+INSERT INTO `role`(name, company_id) VALUES ('Admin', LAST_INSERT_ID());
+
+SET @role_id = LAST_INSERT_ID();
+
+INSERT INTO `permission`(name) VALUES ('getUsers');
+INSERT INTO `role_permission`(permission_id, role_id) VALUES (LAST_INSERT_ID(), @role_id);
+
+INSERT INTO `permission`(name) VALUES ('getCompanies');
+INSERT INTO `role_permission`(permission_id, role_id) VALUES (LAST_INSERT_ID(), @role_id);
+
+COMMIT;

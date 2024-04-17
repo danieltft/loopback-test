@@ -1,4 +1,5 @@
-import {AdminCreateUserCommand, AdminSetUserPasswordCommand, AuthFlowType, AuthenticationResultType, CognitoIdentityProviderClient, InitiateAuthCommand, ListUserPoolsCommand, MessageActionType} from "@aws-sdk/client-cognito-identity-provider";
+import {AdminCreateUserCommand, AdminSetUserPasswordCommand, AuthFlowType, AuthenticationResultType, CognitoIdentityProviderClient, InitiateAuthCommand, MessageActionType} from "@aws-sdk/client-cognito-identity-provider";
+import {Transaction} from '@loopback/repository';
 import HttpError, {STATUS_BAD_REQUEST, STATUS_UNAUTHORIZED} from '../common/http';
 import {User} from '../models/user.model';
 import {UserRepository} from '../repositories/user.repository';
@@ -31,10 +32,9 @@ export class CognitoService {
   async signUp(
     user: User,
     password: string,
-    userRepo: UserRepository
+    userRepo: UserRepository,
+    tx: Transaction
   ): Promise<void> {
-    const list = await this.client.send(new ListUserPoolsCommand({MaxResults: 10}));
-    console.log(list);
     const input = {
       UserPoolId: this.USER_POOL_ID,
       Username: user.email,
@@ -47,19 +47,17 @@ export class CognitoService {
     try {
       const userPassword = password;
       const result = await this.client.send(command);
-      console.log(result);
       const cognitoUsername = result.User!.Username;
       await userRepo.updateById(user.id, {
         cognitoId: cognitoUsername
-      });
+      }, {transaction: tx});
       const passwordCommand = new AdminSetUserPasswordCommand({
         UserPoolId: this.USER_POOL_ID,
         Username: user.email,
         Password: userPassword,
         Permanent: true
       });
-      const secondResult = await this.client.send(passwordCommand);
-      console.log(secondResult);
+      await this.client.send(passwordCommand);
     } catch (err: any) {
       if (err.$metadata && err.$metadata.httpStatusCode < 500) {
         throw new HttpError(
