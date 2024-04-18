@@ -55,6 +55,17 @@ class CreateUser {
   password: string;
 }
 
+const loginResponse = {
+  type: 'object',
+  properties: {
+    AccessToken: {type: 'string'},
+    ExpiresIn: {type: 'number'},
+    TokenType: {type: 'string'},
+    RefreshToken: {type: 'string'},
+    IdToken: {type: 'string'}
+  }
+}
+
 export class UserController {
 
   constructor(
@@ -112,6 +123,7 @@ export class UserController {
       companyId: company.id
     }, {transaction: tx});
 
+    // Search for company template
     const templateCompany = await this.companyRepository.findOne({where: {name: 'Template'}});
     if (templateCompany === null) {
       throw new HttpError(
@@ -120,22 +132,20 @@ export class UserController {
       )
     }
 
+    // Get roles from company template
     const templateRoles = await this.roleRepository.find({
       where: {companyId: templateCompany.id},
       include: ['permissions']
     });
 
     await Promise.all(templateRoles.map(async (role) => {
+      // Create copy of roles from template company
       const newRole = await this.roleRepository.create({
         name: role.name,
         companyId: company.id
       }, {transaction: tx});
 
-      console.log('new role', newRole);
-      console.log('permissions of role', role.permissions);
-
       if (role.permissions !== undefined && role.permissions.length > 0) {
-
         await Promise.all(role.permissions.map(async (permission) => {
           await this.rolePermissionRepository.create({
             roleId: newRole.id,
@@ -144,6 +154,7 @@ export class UserController {
         }));
       }
 
+      // Assign roles to new user
       await this.userRoleRepository.create({
         userId: user.id,
         roleId: newRole.id
@@ -152,6 +163,7 @@ export class UserController {
 
     const authService = new CognitoService();
     try {
+      // Signup in AWS Cognito
       await authService.signUp(
         user,
         request.password,
@@ -174,9 +186,7 @@ export class UserController {
         description: 'User login',
         content: {
           'application/json': {
-            schema: {
-              'x-ts-type': User,
-            },
+            schema: loginResponse,
           },
         },
       },
@@ -199,6 +209,25 @@ export class UserController {
       credentials.password
     );
     return result;
+  }
+
+  @authorize({})
+  @get('/me', {
+    responses: {
+      '200': {
+        description: 'Get details of signed in user',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(User)
+          },
+        },
+      },
+    },
+  })
+  async getMe(
+    @inject('currentUser') currentUser: User
+  ): Promise<User> {
+    return currentUser;
   }
 
   @authorize({

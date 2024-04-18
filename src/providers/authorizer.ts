@@ -43,8 +43,16 @@ export class AuthorizationProvider implements Provider<Authorizer> {
         r.permissions.map((p) => userPermissions.push(p.name))
       });
 
+      ctx.invocationContext.bind('currentUser').to({
+        ...user,
+        roles: undefined
+      });
+
+      if (metadata.resource === undefined) {
+        return AuthorizationDecision.ALLOW;
+      }
+
       if (userPermissions.includes(metadata.resource as string)) {
-        ctx.invocationContext.bind('currentUser').to(user);
         return AuthorizationDecision.ALLOW
       }
 
