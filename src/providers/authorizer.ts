@@ -18,10 +18,10 @@ export class AuthorizationProvider implements Provider<Authorizer> {
     ctx: AuthorizationContext,
     metadata: AuthorizationMetadata
   ) {
-    const context: any = await ctx.invocationContext.get('rest.http.request.context');
-    const authHeader: string = context.request.headers.authorization;
-    const token = authHeader.split(" ")[1];
     try {
+      const request: any = await ctx.invocationContext.get('rest.http.request');
+      const authHeader: string = request.headers.authorization;
+      const token = authHeader.split(" ")[1];
       const service = new CognitoVerify();
       const cognitoUser = await service.verify(token);
       const user = await this.userRepository.findOne({

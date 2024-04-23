@@ -174,7 +174,7 @@ export class UserController {
       console.log(err);
       throw new HttpError(
         err.message,
-        STATUS_CONFLICT
+        err.statusCode
       )
     }
     return user;
